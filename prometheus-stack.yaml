@@ -1,0 +1,57 @@
+# For this chart default values see:
+# https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
+
+kubeControllerManager:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeScheduler:
+  enabled: false
+
+prometheus-node-exporter:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 200M
+    requests:
+      cpu: 10m
+      memory: 20M
+
+# https://github.com/helm/charts/blob/master/stable/grafana/values.yaml
+grafana:
+  enabled: true
+
+  env:
+    GF_SERVER_ROOT_URL: https://grafana.${domain}/
+
+  adminPassword: ${grafana_admin_password}
+
+  ingress:
+    enabled: true
+    hosts:
+      - grafana.${domain}
+    path: /
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/certificate-arn: ${grafana_certificate_arn}
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+      alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+      alb.ingress.kubernetes.io/scheme: internet-facing 
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/group.name: ${group_name}
+      alb.ingress.kubernetes.io/healthcheck-path: /api/health
+
+prometheus:
+  enabled: true
+
+  retention: 30d
+
+  # prometheusSpec:
+  #   storageSpec:
+  #     volumeClaimTemplate:
+  #       spec:
+  #         storageClassName: gp2
+  #         accessModes: ["ReadWriteOnce"]
+  #         resources:
+  #           requests:
+  #             storage: 50Gi
