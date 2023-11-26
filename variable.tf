@@ -1,7 +1,12 @@
 variable "region" {
   type = string
 }
-
+variable "access_key" {
+   type = string
+}
+variable "secret_key" {
+   type = string
+}
 variable "key_name" {
   default = "test"
 }
@@ -9,41 +14,48 @@ variable "key_name" {
 variable "ECR_REPOS" {
   type    = list(string)
   default = ["users"]
-
 }
 
-variable "FRONTEND_CODE_COMMIT_REPOS" {
-  type    = list(string)
-  default = ["frontend"]
+variable "argocd_namespace" {
+  type    = string
+  default = "agrocd"
 }
 
-variable "BACKEND_CODE_COMMIT_REPOS" {
-  type    = set(string)
-  default = ["frontend"]
-}
-
-variable "restriction_type" {
-  default = "none"
-}
-
-variable "blacklist_countries" {
-  default = []
-}
-
-variable "TFC_AWS_RUN_ROLE_ARN" {
-  type = string
-}
-
-variable "TFC_AWS_PROVIDER_AUTH" {
-  type = string
-}
-
-variable "enable_user_pool" {
+variable "enable_vpn" {
   type    = bool
-  default = true
+  default = false
 }
 
-variable "sso_enabled_envs" {
-  type    = list(string)
-  default = ["dev", "uat"]
+variable "enable_bastion" {
+  type    = bool
+  default = false
+}
+
+variable "enable_ingress_controller" {
+  type    = bool
+  default = false
+}
+
+variable "enable_agrocd" {
+  type    = bool
+  default = false
+}
+
+variable "enable_ecr" {
+  type    = bool
+  default = false
+}
+variable "enabale_prometheus" {
+  type    = bool
+  default = false
+}
+
+variable "enabale_grafana" {
+  type    = bool
+  default = false
+}
+
+variable "create_user" {
+  type    = bool
+  default = false
 }

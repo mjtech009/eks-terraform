@@ -1,10 +1,9 @@
 locals {
   prometheus_namespace = "prometheus"
-  prometheus_enabled   = local.var.prometheus_enabled == true ? 1 : 0
 }
 
 resource "kubernetes_namespace" "prometheus" {
-  count = local.prometheus_enabled
+  count = var.enabale_prometheus ? 1 :0 
   metadata {
     annotations = {
       name = local.prometheus_namespace
@@ -15,24 +14,24 @@ resource "kubernetes_namespace" "prometheus" {
 }
 
 resource "random_id" "grafana_password" {
-  count       = local.prometheus_enabled
+  count       = var.enabale_prometheus ? 1 :0 
   byte_length = 8
 }
 
 resource "aws_ssm_parameter" "grafana_password" {
-  count = local.prometheus_enabled
+  count = var.enabale_prometheus ? 1 :0 
   name  = "/${local.var.environment}/grafana/password"
   type  = "SecureString"
   value = random_id.grafana_password.0.hex
 }
 
 data "aws_route53_zone" "current" {
-  count = local.prometheus_enabled
+  count = var.enabale_prometheus ? 1 :0 
   name  = local.var.prometheus_domain
 }
 
 module "acm_grafana" {
-  count                = local.prometheus_enabled
+  count                = var.enabale_prometheus ? 1 :0 
   source               = "terraform-aws-modules/acm/aws"
   domain_name          = "grafana.${local.var.prometheus_domain}"
   zone_id              = data.aws_route53_zone.current.0.id
@@ -42,7 +41,7 @@ module "acm_grafana" {
 }
 
 resource "helm_release" "prometheus_stack" {
-  count      = local.prometheus_enabled
+  count      = var.enabale_prometheus ? 1 :0 
   name       = "kube-prometheus-stack"
   chart      = "kube-prometheus-stack"
   repository = "https://prometheus-community.github.io/helm-charts"
