@@ -1,5 +1,5 @@
 locals {
-  var = yamldecode(file("env.${terraform.workspace}.yaml"))
+  var = yamldecode(file("env.eks.yaml"))
 }
 
 locals {
